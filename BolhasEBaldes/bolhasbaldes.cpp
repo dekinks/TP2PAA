@@ -1,84 +1,89 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
+typedef vector<int> lista;
 int inversoes = 0;
 
-void merge (long int *lista, int inicio, int meio, int fim) {
-    
-    int a = meio - inicio + 1;
-    int b = fim - meio;
+lista merge (lista esquerda, lista direita) 
+{
+    lista listaOrdenada;
     int indexA = 0;
     int indexB = 0;
-    int indexFinal = inicio;
-
-    auto *esquerda = new int[a],
-         *direita = new int[b];
-        
-    for (int i = 0; i < a; i++) { 
-        esquerda[i] = lista[inicio + i];
-    }
-
-    for (int j = 0; j < b; j++) {
-        direita[j] = lista[meio + 1 + j];
-    }
+    int a = esquerda.size();
+    int b = direita.size();
     
-    while (indexA < a && indexB < b) {
-        if (esquerda[indexA] <= direita[indexB]) {
-            lista[indexFinal] = esquerda[indexA];
+    while (indexA < a && indexB < b) 
+    {
+        if (esquerda[indexA] < direita[indexB]) 
+        {
+            listaOrdenada.push_back(esquerda[indexA]);
             indexA++;
         }
-        else {
-            lista[indexFinal] = direita[indexB];
+        else 
+        {
+            listaOrdenada.push_back(direita[indexB]);
             indexB++;
-            inversoes += meio - inicio + 1;
+            inversoes += esquerda.size() - indexA;
         }
-        indexFinal++;
     }
 
-    while (indexA < a) {
-        lista[indexFinal] = esquerda[indexA];
+    while (indexA < a) 
+    {
+        listaOrdenada.push_back(esquerda[indexA]);
         indexA++;
-        indexFinal++;
     }
 
-    while (indexB < b) {
-        lista[indexFinal] = direita[indexB];
+    while (indexB < b) 
+    {
+        listaOrdenada.push_back(direita[indexB]);
         indexB++;
-        indexFinal++;
     }
+
+    return listaOrdenada;
 }
 
-void mergesort (long int *lista, int inicio, int fim) {
-    if (fim <= inicio)
-        return;
+lista mergesort (lista listaParaOrdenar, int inicio, int fim) 
+{
+    lista listaOrdenada;
+
+    int meio = (inicio + fim) / 2;
+
+    if (fim <= inicio + 1)
+    {
+        listaOrdenada.push_back(listaParaOrdenar[inicio]);
+        return listaOrdenada;
+    }
     
-    int meio = inicio + (fim - inicio) / 2;
+    lista esquerda = mergesort(listaParaOrdenar, inicio, meio);
+    lista direita = mergesort(listaParaOrdenar, meio, fim);
+    listaOrdenada = merge (esquerda, direita);
 
-    mergesort(lista, inicio, meio);
-    mergesort(lista, meio + 1, fim);
-    merge (lista, inicio, meio, fim);
+    return listaOrdenada;
 }
 
-int main (int argc, char *argv[]) {
-    int tamanho, tamanhoAux = 1;
+int main (int argc, char *argv[]) 
+{
+    int tamanho, tamanhoAux, valor = 1;
+    lista listaParaOrdenar;
+
     while (true) {
         cin >> tamanho;
+
+        listaParaOrdenar.clear();
         tamanhoAux = tamanho;
-        int i = 0;
 
-        if (tamanho == 0) {
+        if (tamanho == 0) 
             break;
-        }
 
-        long int listaParaOrdenar[tamanho];
-
-        while (tamanhoAux != 0) {
-            cin >> listaParaOrdenar[i];
-            i++;
+        while (tamanhoAux != 0) 
+        {
+            cin >> valor;
+            listaParaOrdenar.push_back(valor);
             tamanhoAux--;
         }
 
-        mergesort(listaParaOrdenar, 0, tamanho - 1);
+        mergesort(listaParaOrdenar, 0, tamanho);
 
         if (inversoes % 2 == 0)
             cout << "Carlos\n";

@@ -2,17 +2,16 @@
 #include <algorithm>
 using namespace std;
 
-typedef struct 
+typedef struct
 {
     double tempo;
     double processamento;
+    double proporcao;
 }Produto;
 
-int comparar(const void *a, const void *b) {
-    Produto *produtoA = (Produto *)a;
-    Produto *produtoB = (Produto *)b;
-
-    return ( produtoB->tempo - produtoA->tempo );
+bool comparar (Produto posterior, Produto anterior)
+{
+    return posterior.tempo < anterior.tempo;
 }
 
 int main()
@@ -22,7 +21,7 @@ int main()
     while (scanf("%d", &tarefas) != EOF)
     {
         int i = 0;
-        int resposta = 0;
+        int tempo_total = 0;
         Produto produto[tarefas];
 
         while (i < tarefas)
@@ -31,18 +30,16 @@ int main()
             i++;
         }
 
-        qsort(produto, tarefas, sizeof(Produto), comparar);
-
-        while (i < tarefas)
-        {
-            if (resposta - produto[i].tempo < 0)
-                resposta = produto[i].tempo + produto[i].processamento;
-            else
-                resposta += produto[i].processamento;
-
-            i++;
-        }
+        sort(produto, produto + tarefas, comparar);
         
-        cout << resposta << endl;
+        for (int j = 0; j < tarefas; j++)
+        {
+            if (tempo_total - produto[j].tempo < 0)
+                tempo_total = produto[j].tempo + produto[j].processamento;
+            else
+                tempo_total += produto[j].processamento;
+        }
+
+        cout << tempo_total << endl;
     }
 }
